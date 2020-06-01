@@ -2,6 +2,7 @@
 
 import datetime
 import io
+import MySQLdb as sql
 import requests
 
 #dictionary for all states with data from the entire loaded file
@@ -70,7 +71,22 @@ generateUSDict()
 florida_data_dict = us_data_dict['Florida']
 
 #testing prints
-print(florida_data_dict['Confirmed'], '\n\n')
+# print(florida_data_dict['Confirmed'], '\n\n')
 
-for state in province_state_list:
-    print(state, ':', us_data_dict[state], '\n')
+# for state in province_state_list:
+#     print(state, ':', us_data_dict[state], '\n')
+
+#data base setup
+
+db = sql.connect(host='us-cdbr-east-06.cleardb.net',
+                 user='b9d08f47000221',
+                 passwd='918261d6',
+                 db='heroku_321160db39a927e')
+
+cur = db.cursor()
+
+cur.execute('select * from us_covid19_data')
+
+for row in cur.fetchall():
+    print(row[0], ' ', row[1])
+
