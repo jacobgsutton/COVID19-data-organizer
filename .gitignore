@@ -1,0 +1,5 @@
+#Configuration file
+config.ini
+
+#Byte-compiled
+__pycache__/

@@ -7,18 +7,24 @@ import requests
 
 from rw_data import addNewDayData, commit, close
 from update_chart import updateChart
+from send_console_sms import Log
+from configuration_vars import my_chart
 
 __author__ = 'Jake Sutton'
 __copyright__ = 'Copyright 2020, www.jakegsutton.com'
 
 __license__ = 'MIT'
 __email__ = 'jakesutton1249@gmail.com'
-__status__ = 'Development'
+__status__ = 'Production'
 
+
+#Creates a log instance for the entire program to use
+log = Log()
+
+print(log.logIt('Started Process...'))
 
 #Dictionary for all states with data from the entire loaded file
 us_data_dict = {}
-
 
 #Get date info needed
 today = datetime.date.today()
@@ -31,15 +37,15 @@ formated_yesterdays_date = datetime.date.strftime(yesterday, '%m-%d-%Y')
 #Html request to JHU CSSE COVID-19 git repo
 response = None
 try:
-    print('Getting data...')
+    print(log.logIt('Getting data...'))
     response = requests.get('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/' + formated_todays_date + '.csv')
     response.raise_for_status()
 except requests.HTTPError as e:
-    print(e, 'Looking for data elsewhere...')
+    print(log.logIt(str(e) + ' Looking for data elsewhere...'))
     try:
         response = requests.get('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/' + formated_yesterdays_date + '.csv')
     except requests.exceptions.RequestException as e:
-        print('NO DATA FOUND... YESTERDAYS FILE MUST NOT EXIST... FATAL ERROR...')
+        print(log.logIt('NO DATA FOUND... YESTERDAYS FILE MUST NOT EXIST... FATAL ERROR...'))
         raise SystemExit(e)
 
 
@@ -93,4 +99,9 @@ updateChart(today)
 #Closes the database connection
 close()
 
-print('Process complete...')
+print(log.logIt('Process complete...'))
+print(log.logIt('Chart: ' + my_chart))
+
+#Sends a message to my phone that contains the log
+log.send()
+

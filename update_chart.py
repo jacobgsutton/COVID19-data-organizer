@@ -1,6 +1,6 @@
 '''Updates chart hosted on amcharts.com using selenium and chrome webdriver.'''
 
-from datetime import date
+from datetime import date, datetime
 import os
 import time
 
@@ -11,28 +11,36 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
 
 from rw_data import getStateData
+from configuration_vars import amcharts_password
+from send_console_sms import Log
 
 __author__ = 'Jake Sutton'
 __copyright__ = 'Copyright 2020, www.jakegsutton.com'
 
 __license__ = 'MIT'
 __email__ = 'jakesutton1249@gmail.com'
-__status__ = 'Development'
+__status__ = 'Production'
 
+#Categories of the data (used for console output)
+CATS = ['Province_State', 'Country_Region', 'Date', 'Last_Update', 'Lat', 'Long', 'Confirmed', 'Deaths', 
+     'Recovered', 'Active', 'FIPS', 'Incident_Rate', 'People_Tested', 'People_Hospitalized', 
+     'Mortality_Rate', 'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate']
+
+#Gets the log instance that already exist since log is a singleton
+log = Log()
 
 LOCAL_PATH = 'C:/WebDriver/bin/chromedriver_win32/chromedriver83.exe'
 PATH = os.environ.get('CHROMEDRIVER_PATH')
 
-password = 'Jswag0224'
-
 chrome_options =  webdriver.ChromeOptions()
 # chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
-# chrome_options.add_argument('--headless')
-# chrome_options.add_argument('--disable-dev-shm-usage')
-# chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--start-maximized')
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--window-size=1920,1080')
+chrome_options.add_argument('--disable-gpu')
 
-driver = webdriver.Chrome(executable_path=LOCAL_PATH, options=chrome_options) 
+driver = webdriver.Chrome(executable_path=LOCAL_PATH, options=chrome_options)
 
 driver.get('https://live.amcharts.com/')
 
@@ -55,7 +63,6 @@ def updateChart(date_):
 
     florida_confirmed_difference = florida_confirmed_today - florida_confirmed_last
 
-
     try:
         driver.find_element_by_xpath('/html/body/div/section[1]/header/div/div/div/nav/ul[1]/li[2]/a').click()
 
@@ -63,7 +70,7 @@ def updateChart(date_):
         wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div/div/div/main/article/header/form/p[1]/input')))
 
         driver.find_element_by_xpath('/html/body/div/div/div/main/article/header/form/p[1]/input').send_keys(__email__)
-        driver.find_element_by_xpath('/html/body/div/div/div/main/article/header/form/p[2]/input').send_keys(password)
+        driver.find_element_by_xpath('/html/body/div/div/div/main/article/header/form/p[2]/input').send_keys(amcharts_password)
         driver.find_element_by_xpath('/html/body/div/div/div/main/article/header/form/p[5]/label/input').click()
         driver.find_element_by_xpath('/html/body/div/div/div/main/article/header/form/p[4]/input[1]').click()
 
@@ -88,11 +95,27 @@ def updateChart(date_):
 
         time.sleep(5)
 
+        print(log.logIt('Quiting selenium session... id: ' + str(driver.session_id)))
         driver.quit()
 
+        output = ''
+        for val, cat in zip(todays_florida_data, CATS):
+            output += cat + ': '
+            if isinstance(val, datetime):
+                output += date.strftime(val, '%m/%d/%Y, %H:%M:%S') 
+            elif isinstance(val, date):
+                output += date.strftime(val, '%m/%d/%Y')      
+            else:
+                output += str(val)    
+            output += '\n'
 
-        print('All of Floida\'s data from today\'s update:', todays_florida_data, '\nTotal cumulative florida cases as of today:', florida_confirmed_today)
-        print('Total cumulative florida cases up to yesterday: ', florida_confirmed_last, '\nTotal new cases today (i.e. the differenece):', florida_confirmed_difference)
+        print(log.logIt('All of Florida\'s data from the latest release:\n' + output, one_nl=True))
+        print(log.logIt('Note: Any values of "None" are categories that had no value in the original dataset. This is likely due to insufficient data verification for that category specifically...'))    
+        print(log.logIt('Total cumulative florida cases as of today: ' + str(florida_confirmed_today)))
+        print(log.logIt('Total cumulative florida cases up to yesterday: ' + str(florida_confirmed_last) + '\n\nTotal new cases today (i.e. the differenece): ' + str(florida_confirmed_difference)))
+
     except WebDriverException as e:
-        print('An error occurred during chart update... ', e, 'It is possible that the database was updated, however, the chart was not...') 
+        print(log.logIt('An error occurred during chart update... '))
+        print(log.logIt(e))
+        print(log.logIt('It is possible that the database was updated, however, the chart was not...'))
    

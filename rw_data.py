@@ -8,19 +8,24 @@ from datetime import date
 
 import MySQLdb as sql
 
+from configuration_vars import sql_database, sql_host, sql_password, sql_user
+from send_console_sms import Log
+
 __author__ = 'Jake Sutton'
 __copyright__ = 'Copyright 2020, www.jakegsutton.com'
 
 __license__ = 'MIT'
 __email__ = 'jakesutton1249@gmail.com'
-__status__ = 'Development'
+__status__ = 'Production'
 
+#Gets the log instance that already exist since log is a singleton
+log = Log()
 
 #data base setup
-db = sql.connect(host='us-cdbr-east-06.cleardb.net',
-                 user='b9d08f47000221',
-                 passwd='918261d6',
-                 db='heroku_321160db39a927e')
+db = sql.connect(host=sql_host,
+                 user=sql_user,
+                 passwd=sql_password,
+                 db=sql_database)
 
 cur = db.cursor()
 
@@ -43,7 +48,9 @@ def fillNulls(str_):
 
 def addNewDayData(dict, date_):
     '''Adds one days worth of US COVID19 data to the bulk us_covid19_data table plus a null row to ditinguish between different data additions to the table.'''
+    i = 0
     do = 'insert into us_covid19_data '
+    print(log.logIt('Updating database...'))
     for state in dict:
         print('Executing insert... Value returned was', cur.execute(do + "(Province_State, Country_Region, Date_, Last_Update, Lat, Long_, Confirmed, Deaths, "
                     "Recovered, Active_, FIPS, Incident_Rate, People_Tested, People_Hospitalized, Mortality_Rate, UID, ISO3, Testing_Rate, "
@@ -52,8 +59,9 @@ def addNewDayData(dict, date_):
                     dict[state]['Deaths'],dict[state]['Recovered'],dict[state]['Active'],dict[state]['FIPS'],dict[state]['Incident_Rate'],dict[state]['People_Tested'],
                     dict[state]['People_Hospitalized'],dict[state]['Mortality_Rate'],dict[state]['UID'],dict[state]['ISO3'],dict[state]['Testing_Rate'],
                     dict[state]['Hospitalization_Rate']))))
+        i += 1
     cur.execute(do + 'values(default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default);')
-
+    log.logIt('Executing insert... x' + str(i))
 
 def getStateData(state='Florida', date_='0', cap_id=10000000):
     '''
@@ -67,16 +75,16 @@ def getStateData(state='Florida', date_='0', cap_id=10000000):
             cur.execute("select * from us_covid19_data where Province_State = '{0}' and Date_ = '{1}';".format(state, date_))     
             return cur.fetchall()[0]
         except ValueError:
-            print('Incorrect date format... should be YYYY-MM-DD.')
+            print(log.logIt('Incorrect date format... should be YYYY-MM-DD.'))
     cur.execute("select * from us_covid19_data where Province_State = '{0}' and id < {1};".format(state, cap_id))
     return cur.fetchall()
 
 def commit():
     '''Commits changes to the database.'''
-    print('Commiting changes...')
+    print(log.logIt('Commiting changes...'))
     db.commit()
 
 def close():
     '''Closes the connection to the datebase.'''
-    print('Closing connection...')
+    print(log.logIt('Closing connection...'))
     db.close()
