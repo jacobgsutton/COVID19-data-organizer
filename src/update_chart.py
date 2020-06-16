@@ -29,8 +29,8 @@ CATS = ['Province_State', 'Country_Region', 'Date', 'Last_Update', 'Lat', 'Long'
 #Gets the log instance that already exist since log is a singleton
 log = Log()
 
-#PATH = 'C:/WebDriver/bin/chromedriver_win32/chromedriver83.exe' #Local path
-PATH = os.environ.get('CHROMEDRIVER_PATH')
+PATH = 'C:/WebDriver/bin/chromedriver_win32/chromedriver83.exe' #Local path
+#PATH = os.environ.get('CHROMEDRIVER_PATH')
 
 chrome_options =  webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
@@ -38,7 +38,7 @@ chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--window-size=1920,1080')
-#chrome_options.add_argument('--disable-gpu') #For windows environment only
+chrome_options.add_argument('--disable-gpu') #For windows environment only
 
 driver = webdriver.Chrome(executable_path=PATH, options=chrome_options)
 
@@ -109,10 +109,10 @@ def updateChart(date_):
                 output += str(val)    
             output += '\n'
 
-        print(log.logIt('All of Florida\'s data from the latest release:\n' + output, one_nl=True))
+        print(log.logIt('All of Florida\'s data from the latest release (yesterday):\n' + output, one_nl=True))
         print(log.logIt('Note: Any values of "None" are categories that had no value in the original dataset. This is likely due to insufficient data verification for that category specifically...'))    
-        print(log.logIt('Total cumulative florida cases as of today: ' + str(florida_confirmed_today)))
-        print(log.logIt('Total cumulative florida cases up to yesterday: ' + str(florida_confirmed_last) + '\n\nTotal new cases today (i.e. the differenece): ' + str(florida_confirmed_difference)))
+        print(log.logIt('Total cumulative florida cases as of latest release: ' + str(florida_confirmed_today)))
+        print(log.logIt('Total cumulative florida cases before latest release: ' + str(florida_confirmed_last) + '\n\nTotal new cases (i.e. the differenece): ' + str(florida_confirmed_difference)))
 
     except WebDriverException as e:
         print(log.logIt('An error occurred during chart update... '))
