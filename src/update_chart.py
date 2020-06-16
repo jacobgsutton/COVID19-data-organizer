@@ -29,18 +29,18 @@ CATS = ['Province_State', 'Country_Region', 'Date', 'Last_Update', 'Lat', 'Long'
 #Gets the log instance that already exist since log is a singleton
 log = Log()
 
-LOCAL_PATH = 'C:/WebDriver/bin/chromedriver_win32/chromedriver83.exe'
+#PATH = 'C:/WebDriver/bin/chromedriver_win32/chromedriver83.exe' #Local path
 PATH = os.environ.get('CHROMEDRIVER_PATH')
 
 chrome_options =  webdriver.ChromeOptions()
-# chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
+chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--window-size=1920,1080')
-chrome_options.add_argument('--disable-gpu')
+#chrome_options.add_argument('--disable-gpu') #For windows environment only
 
-driver = webdriver.Chrome(executable_path=LOCAL_PATH, options=chrome_options)
+driver = webdriver.Chrome(executable_path=PATH, options=chrome_options)
 
 driver.get('https://live.amcharts.com/')
 
