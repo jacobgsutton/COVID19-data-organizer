@@ -2,6 +2,7 @@
 
 '''Script to control excution of getting data from JHU CSSE, adding all US data to a database, and updating a simple amcharts.com graph for florida COVID19 cases.'''
 
+from datetime import date
 import datetime
 import requests
 
@@ -29,11 +30,11 @@ us_data_dict = {}
 #Gets date info needed. (This is set up so that 'today' is actually yesterday in relation to when the program is executed. 
 #This is because the repository that the data is located is usually not uploaded until the next day in relation to the day the data is from)
 #This program is designed to run in the morning the day after the day that the data is from.
-today = datetime.date.today() - datetime.timedelta(days=1)
+today = date.today() - datetime.timedelta(days=1)
 yesterday = today - datetime.timedelta(days=1)
 
-formated_todays_date = datetime.date.strftime(today, '%m-%d-%Y')
-formated_yesterdays_date = datetime.date.strftime(yesterday, '%m-%d-%Y')
+formated_todays_date = date.strftime(today, '%m-%d-%Y')
+formated_yesterdays_date = date.strftime(yesterday, '%m-%d-%Y')
 
 
 #Html request to JHU CSSE COVID-19 git repo
@@ -103,6 +104,7 @@ close()
 
 print(log.logIt('Process complete...'))
 print(log.logIt('Chart: ' + my_chart))
+print(log.logIt('Time Completed: ' + date.strftime(datetime.datetime.now(), '%m/%d/%Y, %H:%M:%S') + ' America/New_York'))
 
 #Sends a message to my phone that contains the log
 log.send()
