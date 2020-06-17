@@ -18,6 +18,7 @@ __license__ = 'MIT'
 __email__ = 'jakesutton1249@gmail.com'
 __status__ = 'Production'
 
+
 #Gets the log instance that already exist since log is a singleton
 log = Log()
 
@@ -46,6 +47,7 @@ def fillNulls(str_):
             flag = False
     return str_new
 
+  
 def addNewDayData(dict, date_):
     '''Adds one days worth of US COVID19 data to the bulk us_covid19_data table plus a null row to ditinguish between different data additions to the table.'''
     i = 0
@@ -63,6 +65,7 @@ def addNewDayData(dict, date_):
     cur.execute(do + 'values(default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default,default);')
     log.logIt('Executing insert... x' + str(i))
 
+    
 def getStateData(state='Florida', date_='0', cap_id=10000000):
     '''
     Returns a tuple with a certain state's data on a certain date (format: YYYY-MM-DD). This is retrieved from the database. 
@@ -79,11 +82,13 @@ def getStateData(state='Florida', date_='0', cap_id=10000000):
     cur.execute("select * from us_covid19_data where Province_State = '{0}' and id < {1};".format(state, cap_id))
     return cur.fetchall()
 
+  
 def commit():
     '''Commits changes to the database.'''
     print(log.logIt('Commiting changes...'))
     db.commit()
 
+    
 def close():
     '''Closes the connection to the datebase.'''
     print(log.logIt('Closing connection...'))
