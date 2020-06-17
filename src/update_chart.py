@@ -33,7 +33,7 @@ PATH = 'C:/WebDriver/bin/chromedriver_win32/chromedriver83.exe' #Local path
 #PATH = os.environ.get('CHROMEDRIVER_PATH')
 
 chrome_options =  webdriver.ChromeOptions()
-chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
+#chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--no-sandbox')
