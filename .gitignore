@@ -3,3 +3,6 @@ config.ini
 
 #Byte-compiled
 __pycache__/
+
+#Visual Studio
+.vscode/
