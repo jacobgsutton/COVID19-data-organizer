@@ -36,6 +36,12 @@ yesterday = today - datetime.timedelta(days=1)
 formated_todays_date = date.strftime(today, '%m-%d-%Y')
 formated_yesterdays_date = date.strftime(yesterday, '%m-%d-%Y')
 
+#Used when parsing data, is replaced with \r if a \r is within the file (not using \r\n because it breaks other things)
+nl = '\n'
+
+#Used for createProvStateList fuction when \r\n is being used for line breaks
+offset = 0
+
 
 #Html request to JHU CSSE COVID-19 git repo
 response = None
@@ -55,19 +61,24 @@ except requests.HTTPError as e:
 #Get text from request       
 data = response.text
 
+#Check for \r and change nl to \r and offset to 1 if true
+if '\r' in data:
+    nl = '\r'
+    offset = 1
+
 
 def createProvStateList():
     '''Function to create a list of all the province/states in the data set.'''
     l = []
     for i,d in enumerate(data):
-        if i < len(data)-1 and d == '\n':
-            l.append(data[i+1 : data.index(',', i)])
+        if i < len(data)-1 and d == nl:
+            l.append(data[i+1+offset : data.index(',', i)])
     return l
 
 
 #Grabbing some data and putting it in lists (setup for generating dictionaries)
-data_categories = data[0 :  data.index('\n')].split(',')
-data_categories_2 = data[data.index(',')+1 :  data.index('\n')].split(',')
+data_categories = data[0 :  data.index(nl)].split(',')
+data_categories_2 = data[data.index(',')+1 : data.index(nl)].split(',')
 province_state_list = createProvStateList()
 
 
@@ -76,8 +87,10 @@ def generateUSDict():
     us_data = []
 
     for state in province_state_list:
-        us_data.append(data[data.index(state)+len(state)+1 : data.index('\n', data.index(state))].split(','))
-
+        if data.find(nl, data.index(state)) == -1:
+            us_data.append(data[data.index(state)+len(state)+1 : ].split(','))
+        else:
+            us_data.append(data[data.index(state)+len(state)+1 : data.index(nl, data.index(state))].split(','))
     for i, key in enumerate(province_state_list):
         us_data_dict[key] = {}
         for cat in data_categories_2:
