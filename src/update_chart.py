@@ -23,8 +23,8 @@ __status__ = 'Production'
 
 #Categories of the data (used for console output)
 CATS = ['Province_State', 'Country_Region', 'Date', 'Last_Update', 'Lat', 'Long', 'Confirmed', 'Deaths', 
-     'Recovered', 'Active', 'FIPS', 'Incident_Rate', 'People_Tested', 'People_Hospitalized', 
-     'Mortality_Rate', 'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate']
+     'Recovered', 'Active', 'FIPS', 'Incident_Rate', 'Total_Test_Results', 'People_Hospitalized', 
+     'Case_Fatality_Ratio', 'UID', 'ISO3', 'Testing_Rate', 'Hospitalization_Rate']
 
 #Gets the log instance that already exist since log is a singleton
 log = Log()
