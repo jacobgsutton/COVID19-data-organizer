@@ -30,8 +30,8 @@ us_data_dict = {}
 #Gets date info needed. (This is set up so that 'today' is actually yesterday in relation to when the program is executed. 
 #This is because the repository that the data is located is usually not uploaded until the next day in relation to the day the data is from)
 #This program is designed to run in the morning the day after the day that the data is from.
-today = date.today() - datetime.timedelta(days=3)
-yesterday = today - datetime.timedelta(days=3)
+today = date.today() - datetime.timedelta(days=1)
+yesterday = today - datetime.timedelta(days=1)
 
 formated_todays_date = date.strftime(today, '%m-%d-%Y')
 formated_yesterdays_date = date.strftime(yesterday, '%m-%d-%Y')
