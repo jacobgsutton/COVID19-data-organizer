@@ -55,10 +55,10 @@ def addNewDayData(dict, date_):
     print(log.logIt('Updating database...'))
     for state in dict:
         print('Executing insert... Value returned was', cur.execute(do + "(Province_State, Country_Region, Date_, Last_Update, Lat, Long_, Confirmed, Deaths, "
-                    "Recovered, Active_, FIPS, Incident_Rate, People_Tested, People_Hospitalized, Mortality_Rate, UID, ISO3, Testing_Rate, "
+                    "Recovered, Active_, FIPS, Incident_Rate, Total_Test_Results, People_Hospitalized, Mortality_Rate, UID, ISO3, Testing_Rate, "
                     "Hospitalization_Rate) values" + fillNulls("('{0}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, '{16}', {17}, {18});"
                     .format(state,dict[state]['Country_Region'],date.strftime(date_, '%Y-%m-%d'),dict[state]['Last_Update'],dict[state]['Lat'],dict[state]['Long_'],dict[state]['Confirmed'],
-                    dict[state]['Deaths'],dict[state]['Recovered'],dict[state]['Active'],dict[state]['FIPS'],dict[state]['Incident_Rate'],dict[state]['People_Tested'],
+                    dict[state]['Deaths'],dict[state]['Recovered'],dict[state]['Active'],dict[state]['FIPS'],dict[state]['Incident_Rate'],dict[state]['Total_Test_Results'],
                     dict[state]['People_Hospitalized'],dict[state]['Mortality_Rate'],dict[state]['UID'],dict[state]['ISO3'],dict[state]['Testing_Rate'],
                     dict[state]['Hospitalization_Rate']))))
         i += 1
